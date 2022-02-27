@@ -19,7 +19,8 @@
     "build-doc": "typedoc index.ts --out tsdocs",
     "build": "tsup index.ts --dts --format esm",
     "pretest": "npm run build",
-    "test": "ava --timeout 10s"
+    "test": "ava --timeout 10s",
+    "push": "git push && git push --tags"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",
