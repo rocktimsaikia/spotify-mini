@@ -11,7 +11,7 @@ I have been using a rough version of this lib in my [portfolio's spotify widget]
 ## Installation
 
 ```bash
-yarn add meta-fetcher
+yarn add spotify-mini
 ```
 
 <br/>
