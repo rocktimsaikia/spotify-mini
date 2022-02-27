@@ -1,10 +1,10 @@
 # spotify-mini
-
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/rocktimsaikia/spotify-mini/tests/main?style=flat-square&logo=github&color=success)
 ![npm](https://img.shields.io/npm/v/spotify-mini?style=flat-square&color=success&logo=npm)
 
-> A simple node wrapper around the [Spotify web api](https://developer.spotify.com/documentation/web-api/) that exposes two methods to get the currently playing and the last played track.<br/>
+A simple node wrapper around the [Spotify web api](https://developer.spotify.com/documentation/web-api/) that exposes two methods to get the currently playing and the last played track.<br/>
 
-I have been using a rough version of this lib in my [portfolio's spotify widget](https://rocktimcodes.site) from the very begining, so finally decided to turn it into a proper npm module.
+> I have been using a rough version of this lib in my [portfolio's spotify widget](https://rocktimcodes.site) from the very begining, so finally decided to turn it into a proper npm module.
 
 <br/>
 
