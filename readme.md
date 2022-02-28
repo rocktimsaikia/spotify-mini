@@ -31,7 +31,7 @@ const spotify = new SpotifyClient({
 const currentlyPlayingSong = await spotify.getCurrentlyPlaying();
 
 // Get the last played track
-const lastPlayedTrack = await spotify.getLastPlayedTrack();
+const lastPlayedTrack = await spotify.getLastPlayed();
 
 // The track format is:
 /**
