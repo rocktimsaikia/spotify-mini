@@ -1,4 +1,5 @@
 # spotify-mini
+
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/rocktimsaikia/spotify-mini/tests/main?style=flat-square&logo=github&color=success)
 ![npm](https://img.shields.io/npm/v/spotify-mini?style=flat-square&color=success&logo=npm)
 
@@ -28,19 +29,38 @@ const spotify = new SpotifyClient({
 });
 
 // Get the currently playing track,(if there is no track playing, it will return null)
-const currentlyPlayingSong = await spotify.getCurrentlyPlaying();
+const currentlyPlayingTrack = await spotify.getCurrentlyPlaying();
+/**
+ {
+    isPlaying: true,
+    title: '<track title>',
+    artist: '<artist name>',
+    album: '<album name>',
+ }
+*/
 
 // Get the last played track
 const lastPlayedTrack = await spotify.getLastPlayed();
-
-// The track format is:
 /**
  {
     title: '<track title>',
     artist: '<artist name>',
     album: '<album name>',
  }
-* /
+*/
+
+// If there is no track playing, pass `fallbaclkToLastPlayed` option to get the last played track instead of null
+const currentlyTrack = await spotify.getCurrentlyPlaying({
+  fallbackToLastPlayed: true
+});
+/**
+ {
+    isPlaying: false,
+    title: '<track title>',
+    artist: '<artist name>',
+    album: '<album name>',
+ }
+*/
 ```
 
 <br/>

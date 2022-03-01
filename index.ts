@@ -18,6 +18,10 @@ type SpotifyClientOptions = {
   refreshToken: string;
 };
 
+type CurrentlyPlayingOptions = {
+  fallbackToLastPlayed?: boolean;
+};
+
 const filterResponse = (track: Track): ResponseTrack => ({
   title: track?.name,
   artist: track?.artists?.map((artist) => artist?.name).join(', '),
@@ -25,7 +29,6 @@ const filterResponse = (track: Track): ResponseTrack => ({
 });
 
 const encodeToBase64 = (str: string): string => Buffer.from(str).toString('base64');
-
 export class SpotifyClient {
   private readonly clientId: string;
   private readonly clientSecret: string;
@@ -55,15 +58,22 @@ export class SpotifyClient {
     return responseData?.access_token;
   };
 
-  getCurrentlyPlaying = async () => {
+  getCurrentlyPlaying = async (options: CurrentlyPlayingOptions = {}) => {
+    const { fallbackToLastPlayed = false } = options;
     try {
       const accessToken = await this._genAccesToken();
       const headers = { Authorization: `Bearer ${accessToken}` };
       const response = await fetch(CURRENTLY_PLAYING_URL, { headers });
-      if (response.status === 204) return null;
+      let isPlaying = true;
+      if (response.status === 204) {
+        isPlaying = false;
+        return fallbackToLastPlayed
+          ? { isPlaying, ...(await this.getLastPlayed()) }
+          : null;
+      }
       const responseData = (await response.json()) as CurrentlyPlaying;
       const currentTrack = filterResponse(responseData?.item as Track);
-      return currentTrack;
+      return { isPlaying, ...currentTrack };
     } catch (error: any) {
       throw new Error(error);
     }
