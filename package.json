@@ -19,12 +19,14 @@
     "prebuild": "rm -rf dist",
     "build": "tsup index.ts --dts --format esm",
     "pretest": "npm run build",
-    "test": "ava --timeout 10s"
+    "test": "ava --timeout 10s",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",
     "ava": "^4.0.1",
     "dotenv": "^16.0.0",
+    "husky": "^7.0.4",
     "prettier": "^2.5.1",
     "spotify-types": "^1.0.5",
     "ts-node": "^10.5.0",
