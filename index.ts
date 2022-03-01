@@ -76,7 +76,6 @@ export class SpotifyClient {
       const response = await fetch(LAST_PLAYED_URL, { headers });
       // TODO: add types once spotify-types is updated
       const responseData = (await response.json()) as any;
-      if (!response.ok) throw new Error(responseData);
       const lastPlayedTrack = filterResponse(responseData?.items[0]?.track);
       return lastPlayedTrack;
     } catch (error: any) {

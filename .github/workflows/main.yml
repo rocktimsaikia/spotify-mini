@@ -1,4 +1,4 @@
-name: tests
+name: CI
 
 on:
   push:
@@ -21,7 +21,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
 
       - name: gen .env file
         uses: SpicyPizza/create-envfile@v1.3
@@ -30,6 +29,6 @@ jobs:
           envkey_SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           envkey_SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
 
-      - run: yarn install
-      - run: yarn build
-      - run: yarn test
+      - run: npm install
+      - run: npm run build
+      - run: npm run test
