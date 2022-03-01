@@ -13,7 +13,8 @@
     "name": "Rocktim Saikia",
     "url": "https://rocktimcodes.site"
   },
-  "homepage": "https://github.com/rocktimsaikia/spotify-mini",
+  "funding": "https://buymeacoffee.com/rocktimcodes",
+  "repository": "rocktimsaikia/spotify-mini",
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsup index.ts --dts --format esm",
@@ -43,7 +44,6 @@
     ]
   },
   "np": {
-    "yarn": false,
     "contents": "dist"
   },
   "keywords": [
