@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-unfetch';
-import { stringify } from 'query-string';
+import { stringify } from 'node:querystring';
 import type { AccessToken, CurrentlyPlaying, Track } from 'spotify-types';
 
 const ACCESS_TOKEN_URL = 'https://accounts.spotify.com/api/token';
