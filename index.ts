@@ -58,8 +58,9 @@ export class SpotifyClient {
     return responseData?.access_token;
   };
 
-  getCurrentlyPlaying = async (options: CurrentlyPlayingOptions = {}) => {
-    const { fallbackToLastPlayed = false } = options;
+  getCurrentlyPlaying = async ({
+    fallbackToLastPlayed = false
+  }: CurrentlyPlayingOptions = {}) => {
     try {
       const accessToken = await this._genAccesToken();
       const headers = { Authorization: `Bearer ${accessToken}` };
