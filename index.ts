@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-unfetch';
+import fetch from 'node-fetch';
 import { stringify } from 'node:querystring';
 import type { AccessToken, CurrentlyPlaying, Track } from 'spotify-types';
 
