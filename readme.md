@@ -3,7 +3,7 @@
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/rocktimsaikia/spotify-mini/tests/main?style=flat-square&logo=github&color=success)
 ![npm](https://img.shields.io/npm/v/spotify-mini?style=flat-square&color=success&logo=npm)
 
-A simple node wrapper around the [Spotify web api](https://developer.spotify.com/documentation/web-api/) that exposes two methods to get the currently playing and the last played track.<br/>
+A simple node wrapper around the [Spotify web api](https://developer.spotify.com/documentation/web-api/) that exposes some useful methods like easily getting your currently playing track, last played track or both.
 
 > I have been using a rough version of this lib in my [portfolio's spotify widget](https://rocktimcodes.site) from the very begining, so finally decided to turn it into a proper npm module.
 
@@ -50,7 +50,7 @@ const lastPlayedTrack = await spotify.getLastPlayed();
 */
 
 // If there is no track playing, pass `fallbaclkToLastPlayed` option to get the last played track instead of null
-const currentlyTrack = await spotify.getCurrentlyPlaying({
+const currentTrack = await spotify.getCurrentlyPlaying({
   fallbackToLastPlayed: true
 });
 /**
@@ -64,6 +64,23 @@ const currentlyTrack = await spotify.getCurrentlyPlaying({
 ```
 
 <br/>
+
+## Development
+
+Fork this repo and run
+
+```sh
+yarn install
+```
+
+or
+
+```sh
+npm install
+```
+
+Once the required packages are installed, create a `.env` file with the properties of `.env.example`.
+To run the tests, you will need to generate a `refresh_token` with the minium of the following spotify api scopes: `user-read-currently-playing`, `user-read-recently-played`.
 
 ## License
 
