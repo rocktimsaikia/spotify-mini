@@ -86,6 +86,20 @@ const currentTrack = await spotify.getCurrentlyPlaying({
 
 <br/>
 
+## API
+### `SpotifyClient`
+The exported class that needs to be instanciated to interact with the exposed APIs.
+
+
+### `getCurrentlyPlaying`
+Returns your currently playing track, if none returns null.
+
+**Options**:  
+`fallbackToLastPlayed`: (default: false) If true, it will return the last played track if there is no currently playing track
+
+### `getLastPlayed`
+Returns your last played track. But can be used to get a list of your recently played tracks; accepts an optional integer as argument to get your desired number of recently played tracks. (default: 1) (limit is 1<n<50 )
+
 ## Development
 
 Fork this repo and run
