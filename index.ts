@@ -22,6 +22,10 @@ type CurrentlyPlayingOptions = {
   fallbackToLastPlayed?: boolean;
 };
 
+type CurrentlyPlayingResponse = ResponseTrack & {
+  isPlaying: boolean;
+}
+
 const filterResponse = (track: Track): ResponseTrack => ({
   title: track?.name,
   artist: track?.artists?.map((artist) => artist?.name).join(', '),
@@ -33,7 +37,7 @@ export class SpotifyClient {
   private readonly clientId: string;
   private readonly clientSecret: string;
   private readonly refreshToken: string;
-  private accessToken: AccessToken | null = null;
+  private accessToken: string | null = null;
 
   constructor({ clientId, clientSecret, refreshToken }: SpotifyClientOptions) {
     this.clientId = clientId;
@@ -56,22 +60,29 @@ export class SpotifyClient {
       })
     });
     const responseData = (await response.json()) as AccessToken;
-    return responseData;
+    return responseData?.access_token;
   };
 
   getCurrentlyPlaying = async ({
     fallbackToLastPlayed = false
-  }: CurrentlyPlayingOptions = {}) => {
+  }: CurrentlyPlayingOptions = {}): Promise<CurrentlyPlayingResponse | null> => {
     try {
       if(this.accessToken === null) 
         this.accessToken = await this._genAccesToken();
-      const headers = { Authorization: `Bearer ${this.accessToken.access_token}` };
+
+      const headers = { Authorization: `Bearer ${this.accessToken}` };
       const response = await fetch(CURRENTLY_PLAYING_URL, { headers });
+
+      if(response.status === 401) {
+        this.accessToken = await this._genAccesToken();
+        return this.getCurrentlyPlaying({ fallbackToLastPlayed });
+      }
+
       let isPlaying = true;
       if (response.status === 204) {
         isPlaying = false;
         return fallbackToLastPlayed
-          ? { isPlaying, ...(await this.getLastPlayed())[0] as ResponseTrack }
+          ? { isPlaying, ...(await this.getLastPlayed())[0]}
           : null;
       }
       const responseData = (await response.json()) as CurrentlyPlaying;
@@ -91,14 +102,20 @@ export class SpotifyClient {
       if(limit > 50 || limit < 1)
         throw new Error('Limit must be between 1 and 50');
       
-      const headers = { Authorization: `Bearer ${this.accessToken.access_token}` };
+      const headers = { Authorization: `Bearer ${this.accessToken}` };
       const response = await fetch(`${LAST_PLAYED_URL}?limit=${limit}`, { headers });
+
+      if (response.status === 401) {
+        this.accessToken = await this._genAccesToken();
+        return this.getLastPlayed(limit);
+      }
+
       // TODO: add types once spotify-types is updated
       const responseData = (await response.json()) as any;
       const lastPlayedTrack = responseData.items.map((item: { track: Track; }) => {
-        const track = filterResponse(item.track);
-        return track;	
+        return filterResponse(item.track);
       })
+
       return lastPlayedTrack;
     } catch (error: any) {
       throw new Error(error);
