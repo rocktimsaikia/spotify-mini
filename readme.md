@@ -51,7 +51,7 @@ const lastPlayedTrack = await spotify.getLastPlayed();
  ]
 */
 
-// If you wish to get a list of the recently played songs, pass the limit option, this can be an integer between 1 and 50
+// To get a specific number of the recently played songs, just pass it to the method (1 < n < 50), default is 1
 const recentTracks = await spotify.getLastPlayed(2)
 /**
  [
