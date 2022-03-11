@@ -27,10 +27,29 @@ test('SpotifyClient: get last played song', async (t) => {
   const lastPlayed = await spotify.getLastPlayed();
   t.truthy(typeof lastPlayed !== 'undefined');
 
-  t.truthy(typeof lastPlayed?.title === 'string');
-  t.truthy(typeof lastPlayed?.artist === 'string');
-  t.truthy(typeof lastPlayed?.link === 'string');
-  t.truthy(lastPlayed?.title?.length > 0);
-  t.truthy(lastPlayed?.artist?.length > 0);
-  t.truthy(lastPlayed?.link?.length > 0);
+  t.truthy(typeof lastPlayed[0]?.title === 'string');
+  t.truthy(typeof lastPlayed[0]?.artist === 'string');
+  t.truthy(typeof lastPlayed[0]?.link === 'string');
+  t.truthy(lastPlayed[0]?.title?.length > 0);
+  t.truthy(lastPlayed[0]?.artist?.length > 0);
+  t.truthy(lastPlayed[0]?.link?.length > 0);
 });
+
+test('SpotifyClient: get 10 recently played songs', async (t) => {
+  const lastPlayed = await spotify.getLastPlayed(10);
+  t.truthy(typeof lastPlayed !== 'undefined');
+
+  t.truthy(lastPlayed.length === 10);
+  lastPlayed.forEach((track) => {
+    t.truthy(typeof track?.title === 'string');
+    t.truthy(typeof track?.artist === 'string');
+    t.truthy(typeof track?.link === 'string');
+    t.truthy(track?.title?.length > 0);
+    t.truthy(track?.artist?.length > 0);
+    t.truthy(track?.link?.length > 0);
+  });
+})
+
+test('SpotifyClient: get 60 recently played songs. should throw an error', async (t) => {
+  await t.throwsAsync(spotify.getLastPlayed(60));
+})

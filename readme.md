@@ -42,11 +42,30 @@ const currentlyPlayingTrack = await spotify.getCurrentlyPlaying();
 // Get the last played track
 const lastPlayedTrack = await spotify.getLastPlayed();
 /**
- {
-    title: '<track title>',
-    artist: '<artist name>',
-    album: '<album name>',
- }
+ [
+    {
+      title: '<track title>',
+      artist: '<artist name>',
+      album: '<album name>',
+   }
+ ]
+*/
+
+// To get a specific number of the recently played songs, just pass it to the method (1 < n < 50), default is 1
+const recentTracks = await spotify.getLastPlayed(2)
+/**
+ [
+   {
+      title: '<track title>',
+      artist: '<artist name>',
+      album: '<album name>',
+   },
+   {
+      title: '<track title>',
+      artist: '<artist name>',
+      album: '<album name>',
+   }
+ ]
 */
 
 // If there is no track playing, pass `fallbaclkToLastPlayed` option to get the last played track instead of null
@@ -61,6 +80,8 @@ const currentTrack = await spotify.getCurrentlyPlaying({
     album: '<album name>',
  }
 */
+
+
 ```
 
 <br/>
