@@ -24,7 +24,7 @@ type CurrentlyPlayingOptions = {
 
 type CurrentlyPlayingResponse = ResponseTrack & {
   isPlaying: boolean;
-}
+};
 
 const filterResponse = (track: Track): ResponseTrack => ({
   title: track?.name,
@@ -33,6 +33,7 @@ const filterResponse = (track: Track): ResponseTrack => ({
 });
 
 const encodeToBase64 = (str: string): string => Buffer.from(str).toString('base64');
+
 export class SpotifyClient {
   private readonly clientId: string;
   private readonly clientSecret: string;
@@ -67,14 +68,12 @@ export class SpotifyClient {
     fallbackToLastPlayed = true
   }: CurrentlyPlayingOptions = {}): Promise<CurrentlyPlayingResponse | null> => {
     try {
-      if(this.accessToken === null)
-
-        this.accessToken = await this._genAccesToken();
+      if (this.accessToken === null) this.accessToken = await this._genAccesToken();
 
       const headers = { Authorization: `Bearer ${this.accessToken}` };
       const response = await fetch(CURRENTLY_PLAYING_URL, { headers });
 
-      if(response.status === 401) {
+      if (response.status === 401) {
         this.accessToken = await this._genAccesToken();
         return this.getCurrentlyPlaying({ fallbackToLastPlayed });
       }
@@ -83,7 +82,7 @@ export class SpotifyClient {
       if (response.status === 204) {
         isPlaying = false;
         return fallbackToLastPlayed
-          ? { isPlaying, ...(await this.getLastPlayed())[0]}
+          ? { isPlaying, ...(await this.getLastPlayed())[0] }
           : null;
       }
       const responseData = (await response.json()) as CurrentlyPlaying;
@@ -96,13 +95,10 @@ export class SpotifyClient {
 
   getLastPlayed = async (limit: number = 1): Promise<ResponseTrack[]> => {
     try {
-      
-      if(this.accessToken === null) 
-        this.accessToken = await this._genAccesToken();
-      
-      if(limit > 50 || limit < 1)
-        throw new Error('Limit must be between 1 and 50');
-      
+      if (this.accessToken === null) this.accessToken = await this._genAccesToken();
+
+      if (limit > 50 || limit < 1) throw new Error('Limit must be between 1 and 50');
+
       const headers = { Authorization: `Bearer ${this.accessToken}` };
       const response = await fetch(`${LAST_PLAYED_URL}?limit=${limit}`, { headers });
 
@@ -113,9 +109,9 @@ export class SpotifyClient {
 
       // TODO: add types once spotify-types is updated
       const responseData = (await response.json()) as any;
-      const lastPlayedTrack = responseData.items.map((item: { track: Track; }) => {
+      const lastPlayedTrack = responseData.items.map((item: { track: Track }) => {
         return filterResponse(item.track);
-      })
+      });
 
       return lastPlayedTrack;
     } catch (error: any) {

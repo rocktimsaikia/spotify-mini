@@ -5,7 +5,7 @@
 
 A simple node wrapper around the [Spotify web api](https://developer.spotify.com/documentation/web-api/) that exposes some useful methods like easily getting your currently playing track, last played track or both.
 
-> I have been using a rough version of this lib in my [portfolio's spotify widget](https://www.rocktimsaikia.com/) from the very begining, so finally decided to turn it into a proper npm module.
+> I have been using a rough version of this lib in my [portfolio](https://www.rocktimsaikia.com/) from the very begining, so finally decided to turn it into a proper npm module.
 
 <br/>
 
@@ -28,7 +28,7 @@ const spotify = new SpotifyClient({
   refreshToken: '<YOUR-SPOTIFY-REFRESH-TOKEN>'
 });
 
-// Get the currently playing track,(if there is no track playing, it will return null)
+// Get the currently playing track,(if there is no track playing, it will return the last played track)
 const currentlyPlayingTrack = await spotify.getCurrentlyPlaying();
 /**
  {
@@ -52,7 +52,7 @@ const lastPlayedTrack = await spotify.getLastPlayed();
 */
 
 // To get a specific number of the recently played songs, just pass it to the method (1 < n < 50), default is 1
-const recentTracks = await spotify.getLastPlayed(2)
+const recentTracks = await spotify.getLastPlayed(2);
 /**
  [
    {
@@ -67,54 +67,30 @@ const recentTracks = await spotify.getLastPlayed(2)
    }
  ]
 */
-
-// // If there is no track playing, this will return the last played song, to prevent this feature pass `fallbackToLastPlayed: false`
-const currentTrack = await spotify.getCurrentlyPlaying({
-  fallbackToLastPlayed: true
-});
-/**
- {
-    isPlaying: false,
-    title: '<track title>',
-    artist: '<artist name>',
-    album: '<album name>',
- }
-*/
-
-
 ```
 
 <br/>
 
 ## API
+
 ### `SpotifyClient`
+
 The exported class that needs to be instanciated to interact with the exposed APIs.
 
-
 ### `getCurrentlyPlaying`
+
 Returns your currently playing track, if none returns null.
 
 **Options**:  
-`fallbackToLastPlayed`: (default: false) If true, it will return the last played track if there is no currently playing track
+`fallbackToLastPlayed`: (default: true) returns the last played track if there is no currently playing track, setting it to `false` will return null
 
 ### `getLastPlayed`
+
 Returns your last played track. But can be used to get a list of your recently played tracks; accepts an optional integer as argument to get your desired number of recently played tracks. (default: 1) (limit is 1<n<50 )
 
 ## Development
 
-Fork this repo and run
-
-```sh
-yarn install
-```
-
-or
-
-```sh
-npm install
-```
-
-Once the required packages are installed, create a `.env` file with the properties of `.env.example`.
+Create a `.env` file with the properties of `.env.example`.
 To run the tests, you will need to generate a `refresh_token` with the minium of the following spotify api scopes: `user-read-currently-playing`, `user-read-recently-played`.
 
 ## License
