@@ -68,7 +68,7 @@ const recentTracks = await spotify.getLastPlayed(2)
  ]
 */
 
-// If there is no track playing, pass `fallbaclkToLastPlayed` option to get the last played track instead of null
+// // If there is no track playing, this will return the last played song, to prevent this feature pass `fallbackToLastPlayed: false`
 const currentTrack = await spotify.getCurrentlyPlaying({
   fallbackToLastPlayed: true
 });
