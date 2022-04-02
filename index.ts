@@ -68,6 +68,7 @@ export class SpotifyClient {
   }: CurrentlyPlayingOptions = {}): Promise<CurrentlyPlayingResponse | null> => {
     try {
       if(this.accessToken === null)
+
         this.accessToken = await this._genAccesToken();
 
       const headers = { Authorization: `Bearer ${this.accessToken}` };
@@ -95,13 +96,13 @@ export class SpotifyClient {
 
   getLastPlayed = async (limit: number = 1): Promise<ResponseTrack[]> => {
     try {
-
-      if(this.accessToken === null)
+      
+      if(this.accessToken === null) 
         this.accessToken = await this._genAccesToken();
-
+      
       if(limit > 50 || limit < 1)
         throw new Error('Limit must be between 1 and 50');
-
+      
       const headers = { Authorization: `Bearer ${this.accessToken}` };
       const response = await fetch(`${LAST_PLAYED_URL}?limit=${limit}`, { headers });
 
