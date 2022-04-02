@@ -64,10 +64,11 @@ export class SpotifyClient {
   };
 
   getCurrentlyPlaying = async ({
-    fallbackToLastPlayed = false
+    fallbackToLastPlayed = true
   }: CurrentlyPlayingOptions = {}): Promise<CurrentlyPlayingResponse | null> => {
     try {
-      if(this.accessToken === null) 
+      if(this.accessToken === null)
+
         this.accessToken = await this._genAccesToken();
 
       const headers = { Authorization: `Bearer ${this.accessToken}` };
