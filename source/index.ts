@@ -1,7 +1,15 @@
 import fetch from 'node-fetch'
 import { stringify } from 'node:querystring'
 import { AccessToken, CurrentlyPlaying, Track } from 'spotify-types'
-import { RecentlyPlayedTracks, TopTracks } from './'
+import {
+  CurrentlyPlayingOptions,
+  CurrentlyPlayingResponse,
+  ResponseTrack,
+  SpotifyClientOptions,
+  TopItemsOptions
+} from './types/base'
+import { RecentlyPlayedTracks, TopTracks } from './types/spotify'
+import { encodeToBase64, filterTrack } from './utils'
 
 const ENDPOINTS = {
   accessToken: 'https://accounts.spotify.com/api/token',
@@ -9,14 +17,6 @@ const ENDPOINTS = {
   lastPlayed: 'https://api.spotify.com/v1/me/player/recently-played',
   topItems: 'https://api.spotify.com/v1/me/top'
 }
-
-const filterTrack = (track: Track): ResponseTrack => ({
-  title: track?.name,
-  artist: track?.artists?.map((artist) => artist?.name).join(', '),
-  link: track?.external_urls.spotify
-})
-
-const encodeToBase64 = (str: string): string => Buffer.from(str).toString('base64')
 
 export class SpotifyClient {
   private readonly clientId: string
@@ -48,7 +48,7 @@ export class SpotifyClient {
     return responseData?.access_token
   }
 
-  getCurrentlyPlaying = async ({
+  getCurrentTrack = async ({
     fallbackToLastPlayed = true
   }: CurrentlyPlayingOptions = {}): Promise<CurrentlyPlayingResponse | null> => {
     try {
@@ -59,14 +59,14 @@ export class SpotifyClient {
 
       if (response.status === 401) {
         this.accessToken = await this._genAccesToken()
-        return this.getCurrentlyPlaying({ fallbackToLastPlayed })
+        return this.getCurrentTrack({ fallbackToLastPlayed })
       }
 
       let isPlaying = true
       if (response.status === 204) {
         isPlaying = false
         return fallbackToLastPlayed
-          ? { isPlaying, ...(await this.getLastPlayed())[0] }
+          ? { isPlaying, ...(await this.getRecentTracks())[0] }
           : null
       }
       const responseData = (await response.json()) as CurrentlyPlaying
@@ -77,7 +77,7 @@ export class SpotifyClient {
     }
   }
 
-  getLastPlayed = async (limit: number = 1): Promise<ResponseTrack[]> => {
+  getRecentTracks = async (limit: number = 1): Promise<ResponseTrack[]> => {
     try {
       if (this.accessToken === null) this.accessToken = await this._genAccesToken()
 
@@ -88,7 +88,7 @@ export class SpotifyClient {
 
       if (response.status === 401) {
         this.accessToken = await this._genAccesToken()
-        return this.getLastPlayed(limit)
+        return this.getRecentTracks(limit)
       }
 
       const responseData = (await response.json()) as RecentlyPlayedTracks

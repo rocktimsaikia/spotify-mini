@@ -17,7 +17,7 @@
   "repository": "rocktimsaikia/spotify-mini",
   "scripts": {
     "prebuild": "rm -rf dist",
-    "build": "tsup index.ts --dts --format esm",
+    "build": "tsup source/index.ts --dts --format esm",
     "pretest": "npm run build",
     "test": "ava --timeout 10s",
     "prepare": "husky install"
