@@ -1,4 +1,4 @@
-import { Album, Artist, ExternalID, ExternalUrl, Track, Cursor } from 'spotify-types'
+import { Album, Artist, ExternalID, ExternalUrl } from 'spotify-types'
 
 export interface TopTracks {
   href: string
@@ -7,17 +7,6 @@ export interface TopTracks {
   next: string
   offset: number
   previous: string
-  total: number
-}
-
-export interface RecentlyPlayedTracks {
-  href: string
-  items: {
-    track: Track
-  }[]
-  limit: number
-  next: string
-  cursors: Cursor
   total: number
 }
 

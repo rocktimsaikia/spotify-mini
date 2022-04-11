@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import { stringify } from 'node:querystring'
-import { AccessToken, CurrentlyPlaying, Track } from 'spotify-types'
+import { AccessToken, CurrentlyPlaying, RecentlyPlayed, Track } from 'spotify-types'
 import {
   CurrentlyPlayingOptions,
   CurrentlyPlayingResponse,
@@ -8,7 +8,7 @@ import {
   SpotifyClientOptions,
   TopItemsOptions
 } from './types/base'
-import { RecentlyPlayedTracks, TopTracks } from './types/spotify'
+import { TopTracks } from './types/spotify'
 import { encodeToBase64, filterTrack } from './utils'
 
 const ENDPOINTS = {
@@ -91,7 +91,7 @@ export class SpotifyClient {
         return this.getRecentTracks(limit)
       }
 
-      const responseData = (await response.json()) as RecentlyPlayedTracks
+      const responseData = (await response.json()) as RecentlyPlayed
       const lastPlayedTrack = responseData.items.map(({ track }) => filterTrack(track))
       return lastPlayedTrack
     } catch (error: any) {
