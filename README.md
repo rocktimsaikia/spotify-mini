@@ -1,27 +1,33 @@
 # spotify-mini
 
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/rocktimsaikia/spotify-mini/tests/main?style=flat-square&logo=github&color=success)
 ![npm](https://img.shields.io/npm/v/spotify-mini?style=flat-square&color=success&logo=npm)
 
 Simple Spotify client for nodejs exposing useful methods
 
-> I have been using a rough version of this lib in my [portfolio](https://www.rocktimsaikia.com/) from a long time. So decided to turn it into a proper module.
-
-<br/>
+> I was using a basic version of this library on my [website](https://www.rocktimsaikia.dev/) for a long time, which led me to transform it into a fully-fledged module.
 
 ## Prerequisite
 
-Make sure to create a `refresh token` with atleast these permissions enabled `user-read-currently-playing`, `user-read-recently-played`, `user-top-read`. You can use [spotify-rtoken-cli](https://github.com/rocktimsaikia/spotify-rtoken-cli) to easily create a `refresh_token` right from your terminal.
+Make sure to create a `refresh_token` with atleast the following permissions enabled:
 
-<br/>
+1. `user-read-currently-playing`
+2. `user-read-recently-played`
+3. `user-top-read`
+
+> :bulb: You can use [spotify-rtoken-cli](https://github.com/rocktimsaikia/spotify-rtoken-cli) to easily create a `refresh_token` right from your terminal.
 
 ## Installation
 
-```bash
-yarn add spotify-mini
-```
+```sh
+# Install with npm
+npm install spotify-mini
 
-<br/>
+# Install with yarn
+yarn add spotify-mini
+
+# Install with pnpm
+pnpm add spotify-mini
+```
 
 ## Usage
 
@@ -67,8 +73,6 @@ const topRecentTracks = await spotify.getTopTracks()
 const topOverallTracks = await spotify.getTopTracks({ timeRange: 'long' })
 ```
 
-<br/>
-
 ## API
 
 #### getCurrentTrack
@@ -96,4 +100,4 @@ const topOverallTracks = await spotify.getTopTracks({ timeRange: 'long' })
 
 ## License
 
-[MIT](./LICENSE) License &copy; [ Rocktim Saikia ](https://github.com/rocktimsaikia) 2022
+[MIT](./LICENSE) License &copy; [ Rocktim Saikia ](https://github.com/rocktimsaikia) 2024
