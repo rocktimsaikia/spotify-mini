@@ -13,22 +13,24 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [16.x, 18.x, 19.x, 20.x]
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: gen .env file
-        uses: SpicyPizza/create-envfile@v1.3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
         with:
-          envkey_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-          envkey_SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          envkey_SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          version: 8
 
-      - run: npm install
-      - run: npm run build
-      - run: npm run test
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run the tests
+        run: pnpm test
