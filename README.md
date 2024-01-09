@@ -1,5 +1,6 @@
 # spotify-mini
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rocktimsaikia/spotify-mini/main.yml)
 ![npm](https://img.shields.io/npm/v/spotify-mini?style=flat-square&color=success&logo=npm)
 
 Simple Spotify client for nodejs exposing useful methods
