@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import test from 'ava'
 import sinon from 'sinon'
-import { SpotifyClient } from './dist/index.js'
+import { SpotifyClient } from '../dist/index.js'
 
 const clientId = 'xxx-xxx-xxx-xxx'
 const clientSecret = 'xxx-xxx-xxx-xxx'

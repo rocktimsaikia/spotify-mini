@@ -3,11 +3,11 @@
   "version": "2.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "dist"
   ],
   "license": "MIT",
-  "type": "module",
   "author": {
     "email": "rocktimthedev@gmail.com",
     "name": "Rocktim Saikia",
@@ -16,10 +16,8 @@
   "funding": "https://buymeacoffee.com/rocktimcodes",
   "repository": "rocktimsaikia/spotify-mini",
   "scripts": {
-    "prebuild": "rm -rf dist",
-    "build": "tsup source/index.ts --dts --format esm",
-    "pretest": "npm run build",
-    "test": "ava --timeout 10s",
+    "build": "rm -rf dist && tsup src/index.ts --dts --format esm,cjs",
+    "test": "pnpm build && ava",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -38,14 +36,6 @@
   },
   "dependencies": {
     "node-fetch": "^3.2.3"
-  },
-  "ava": {
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--loader=ts-node/esm"
-    ]
   },
   "np": {
     "contents": "dist"

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "ES2020",
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "target": "esnext"
   }
 }
