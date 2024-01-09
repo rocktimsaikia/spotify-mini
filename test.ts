@@ -1,12 +1,20 @@
 import 'dotenv/config'
 import test from 'ava'
+import sinon from 'sinon'
 import { SpotifyClient } from './dist/index.js'
 
-const clientId = process.env.SPOTIFY_CLIENT_ID as string
-const clientSecret = process.env.SPOTIFY_CLIENT_SECRET as string
-const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN as string
+const clientId = 'xxx-xxx-xxx-xxx'
+const clientSecret = 'xxx-xxx-xxx-xxx'
+const refreshToken = 'xxx-xxx-xxx-xxx'
 
 const spotify = new SpotifyClient({ clientId, clientSecret, refreshToken })
+
+sinon.stub(spotify, 'getCurrentTrack').resolves({
+  title: 'fake-title',
+  artist: 'fake-artist',
+  link: 'https://open.spotify.com/track/123456789',
+  isPlaying: true
+})
 
 test('get currently playing track', async (t) => {
   const currentTrack = await spotify.getCurrentTrack()
@@ -22,6 +30,19 @@ test('get currently playing track', async (t) => {
     t.truthy(currentTrack?.artist?.length > 0)
     t.truthy(currentTrack?.link?.length > 0)
   }
+})
+
+const mockTracks = new Array(50).fill(null).map((_, i) => ({
+  title: `fake-title-${i}`,
+  artist: `fake-artist-${i}`,
+  link: `https://open.spotify.com/track/${i}`
+}))
+
+sinon.stub(spotify, 'getRecentTracks').callsFake(async (limit = 1) => {
+  if (limit > 50 || limit < 1) {
+    throw new Error('Limit must be between 1 and 50')
+  }
+  return mockTracks.slice(0, limit)
 })
 
 test('get last played song', async (t) => {
@@ -49,6 +70,14 @@ test('get 10 recently played songs', async (t) => {
     t.truthy(track?.artist?.length > 0)
     t.truthy(track?.link?.length > 0)
   })
+})
+
+sinon.stub(spotify, 'getTopTracks').callsFake(async (options = {}) => {
+  const limit = options.limit || 10
+  if (limit > 50 || limit < 1) {
+    throw new Error('Limit must be between 1 and 50')
+  }
+  return mockTracks.slice(0, limit)
 })
 
 test('Get top tracks with default options', async (t) => {
