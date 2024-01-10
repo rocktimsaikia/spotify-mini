@@ -29,3 +29,8 @@ export interface Item {
   type: string
   uri: string
 }
+
+export interface BaseError {
+  error: string
+  error_description: string
+}

@@ -8,7 +8,7 @@ import {
   SpotifyClientOptions,
   TopItemsOptions
 } from './types/base'
-import { TopTracks } from './types/spotify'
+import { BaseError, TopTracks } from './types/spotify'
 import { encodeToBase64, filterTrack } from './utils'
 
 const ENDPOINTS = {
@@ -44,6 +44,13 @@ export class SpotifyClient {
         refresh_token: this.refreshToken
       })
     })
+
+    if (!response.ok) {
+      const errorData = (await response.json()) as BaseError
+      const errorMsg = `API Error: "${errorData?.error} - ${errorData?.error_description}"`
+      throw errorMsg
+    }
+
     const responseData = (await response.json()) as AccessToken
     return responseData?.access_token
   }
@@ -52,12 +59,16 @@ export class SpotifyClient {
     fallbackToLastPlayed = true
   }: CurrentlyPlayingOptions = {}): Promise<CurrentlyPlayingResponse | null> => {
     try {
-      if (this.accessToken === null) this.accessToken = await this._genAccesToken()
+      if (this.accessToken === null) {
+        this.accessToken = await this._genAccesToken()
+      }
 
       const headers = { Authorization: `Bearer ${this.accessToken}` }
       const response = await fetch(ENDPOINTS.currentlyPlaying, { headers })
 
       if (response.status === 401) {
+        // This basically checks if the access token is expired and
+        // if it is, it generates a new one and tries again
         this.accessToken = await this._genAccesToken()
         return this.getCurrentTrack({ fallbackToLastPlayed })
       }
