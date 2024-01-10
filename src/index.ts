@@ -2,11 +2,11 @@ import fetch from 'node-fetch'
 import { stringify } from 'node:querystring'
 import { AccessToken, CurrentlyPlaying, RecentlyPlayed, Track } from 'spotify-types'
 import {
-  CurrentlyPlayingOptions,
-  CurrentlyPlayingResponse,
-  ResponseTrack,
-  SpotifyClientOptions,
-  TopItemsOptions
+    CurrentlyPlayingOptions,
+    CurrentlyPlayingResponse,
+    ResponseTrack,
+    SpotifyClientOptions,
+    TopItemsOptions
 } from './types/base'
 import { BaseError, TopTracks } from './types/spotify'
 import { encodeToBase64, filterTrack } from './utils'
@@ -47,7 +47,12 @@ export class SpotifyClient {
 
     if (!response.ok) {
       const errorData = (await response.json()) as BaseError
-      const errorMsg = `API Error: "${errorData?.error} - ${errorData?.error_description}"`
+      let errorMsg = `API Error: "${errorData?.error} - ${errorData?.error_description}"`
+
+      if (errorData?.error_description == 'Refresh token revoked') {
+        errorMsg +=
+          '\n💡Tip: Generate a new refresh token with https://github.com/rocktimsaikia/spotify-rtoken-cli\n\n'
+      }
       throw errorMsg
     }
 
