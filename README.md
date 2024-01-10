@@ -41,42 +41,28 @@ const spotify = new SpotifyClient({
   refreshToken: '<YOUR-SPOTIFY-REFRESH-TOKEN>'
 })
 
-// Get the currently playing track,(if there is no track playing, it will return the last played track)
+// Get the currently playing track.
 const currentlyPlayingTrack = await spotify.getCurrentTrack()
-/**
+
+console.log(currentlyPlayingTrack)
+```
+
+Example output:
+
+```javascript
  {
     isPlaying: true,
     title: '<track title>',
     artist: '<artist name>',
     album: '<album name>',
  }
-*/
-
-// Get the most recently played tracks in order, default return limit is 1
-const lastPlayedTracks = await spotify.getRecentTracks(2)
-/**
- [
-   {
-      title: '<track title>',
-      artist: '<artist name>',
-      album: '<album name>',
-   },
-   {
-      title: '<track title>',
-      artist: '<artist name>',
-      album: '<album name>',
-   }
- ]
-*/
-
-// Get your most played tracks, see API doc below for available options
-const topRecentTracks = await spotify.getTopTracks()
-const topOverallTracks = await spotify.getTopTracks({ timeRange: 'long' })
 ```
 
 ## API
 
 #### getCurrentTrack
+
+Get the currently playing track.
 
 | Options                | Type    | Description                                                                       |
 | ---------------------- | ------- | --------------------------------------------------------------------------------- |
@@ -84,11 +70,15 @@ const topOverallTracks = await spotify.getTopTracks({ timeRange: 'long' })
 
 #### getRecentTracks
 
+Get the recently played tracks.
+
 | Options | Type                  | Description                                                          |
 | ------- | --------------------- | -------------------------------------------------------------------- |
 | `limit` | number (1 <= n <= 50) | Limit the number of recently played tracks to return. (default: `1`) |
 
 #### getTopTracks
+
+Get the top tracks of the user.
 
 | Options     | Type                | Description                                                                  |
 | ----------- | ------------------- | ---------------------------------------------------------------------------- |
