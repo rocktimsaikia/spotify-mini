@@ -18,8 +18,7 @@
   "scripts": {
     "build": "rm -rf dist && tsup src/index.ts --dts --format esm,cjs",
     "test": "pnpm build && ava",
-    "prepare": "husky install",
-    "release": "pnpm test && np --no-tests"
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
@@ -36,9 +35,6 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "np": {
-    "contents": "dist"
   },
   "keywords": [
     "spotify",
