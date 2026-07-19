@@ -1,6 +1,7 @@
 {
   "name": "spotify-mini",
   "version": "2.1.0",
+  "description": "Lightweight Spotify client for Node.js to fetch your currently playing, recent and top tracks",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -11,9 +12,8 @@
   "author": {
     "email": "rocktimthedev@gmail.com",
     "name": "Rocktim Saikia",
-    "url": "https://rocktimcodes.site"
+    "url": "https://rocktim.dev"
   },
-  "funding": "https://buymeacoffee.com/rocktimcodes",
   "repository": "rocktimsaikia/spotify-mini",
   "scripts": {
     "build": "rm -rf dist && tsup src/index.ts --dts --format esm,cjs",
