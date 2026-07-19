@@ -1,7 +1,7 @@
 {
   "name": "spotify-mini",
   "version": "2.1.0",
-  "description": "Lightweight Spotify client for Node.js to fetch your currently playing, recent and top tracks",
+  "description": "Fetch your currently playing, recent and top Spotify tracks in Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",

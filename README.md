@@ -1,94 +1,90 @@
 # spotify-mini
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rocktimsaikia/spotify-mini/main.yml)
-![npm](https://img.shields.io/npm/v/spotify-mini?style=flat-square&color=success&logo=npm)
+![CI](https://github.com/rocktimsaikia/spotify-mini/actions/workflows/main.yml/badge.svg)
+![npm](https://badgen.net/npm/v/spotify-mini)
 
-Simple Spotify client for nodejs exposing useful methods
-
-> I was using a basic version of this library on my [website](https://rocktim.dev/) for a long time, which led me to transform it into a fully-fledged module.
-
-## Prerequisite
-
-Make sure to create a `refresh_token` with atleast the following permissions enabled:
-
-1. `user-read-currently-playing`
-2. `user-read-recently-played`
-3. `user-top-read`
-
-> :bulb: You can use [spotify-rtoken-cli](https://github.com/rocktimsaikia/spotify-rtoken-cli) to easily create a `refresh_token` right from your terminal.
+Fetch your currently playing, recent and top Spotify tracks in Node.js
 
 ## Installation
 
+Requires Node.js 18 or later. Ships with TypeScript types.
+
 ```sh
-# Install with npm
 npm install spotify-mini
-
-# Install with yarn
-yarn add spotify-mini
-
-# Install with pnpm
-pnpm add spotify-mini
 ```
 
 ## Usage
+
+Requires a Spotify `refresh_token` with at least the `user-read-currently-playing`, `user-read-recently-played` and `user-top-read` scopes. You can generate one right from your terminal with [spotify-rtoken-cli](https://github.com/rocktimsaikia/spotify-rtoken-cli).
 
 ```javascript
 import { SpotifyClient } from 'spotify-mini'
 
 const spotify = new SpotifyClient({
   clientId: '<YOUR-SPOTIFY-CLIENT-ID>',
-  clientSecret: '<YOUR-SPOTIFY-CLIENT_SECRET>',
+  clientSecret: '<YOUR-SPOTIFY-CLIENT-SECRET>',
   refreshToken: '<YOUR-SPOTIFY-REFRESH-TOKEN>'
 })
 
-// Get the currently playing track.
-const currentlyPlayingTrack = await spotify.getCurrentTrack()
+const currentTrack = await spotify.getCurrentTrack()
 
-console.log(currentlyPlayingTrack)
+console.log(currentTrack)
 ```
 
-Example output:
+Output:
 
 ```javascript
- {
-    isPlaying: true,
-    title: '<track title>',
-    artist: '<artist name>',
-    link: '<spotify track url>',
- }
+{
+  isPlaying: true,
+  title: '<track title>',
+  artist: '<artist name>',
+  link: '<spotify track url>'
+}
 ```
 
-## API
+## Options
 
-#### getCurrentTrack
+### getCurrentTrack
 
-Get the currently playing track.
+Get the currently playing track. Pass an options object as the first argument:
 
-| Options                | Type    | Description                                                                       |
-| ---------------------- | ------- | --------------------------------------------------------------------------------- |
-| `fallbackToLastPlayed` | boolean | Returns the last played track, if there is no ongoing track atm. (default:`true`) |
+```javascript
+await spotify.getCurrentTrack({ fallbackToLastPlayed: false })
+```
 
-#### getRecentTracks
+| Option                 | Required | Default | Description                                                    |
+| ---------------------- | -------- | ------- | -------------------------------------------------------------- |
+| `fallbackToLastPlayed` | No       | `true`  | Return the last played track if no track is currently playing. |
 
-Get the recently played tracks.
+### getRecentTracks
 
-| Options | Type                  | Description                                                          |
-| ------- | --------------------- | -------------------------------------------------------------------- |
-| `limit` | number (1 <= n <= 50) | Limit the number of recently played tracks to return. (default: `1`) |
+Get the recently played tracks. Pass the limit as the first argument:
 
-#### getTopTracks
+```javascript
+await spotify.getRecentTracks(10)
+```
 
-Get the top tracks of the user.
+| Option  | Required | Default | Description                                           |
+| ------- | -------- | ------- | ----------------------------------------------------- |
+| `limit` | No       | `1`     | Number of recently played tracks to return (1 to 50). |
 
-| Options     | Type                | Description                                                                  |
-| ----------- | ------------------- | ---------------------------------------------------------------------------- |
-| `limit`     | number              | Limit the number of recently played tracks to return. (Default: `10`)        |
-| `timeRange` | short, medium, long | Over what time range the top tracks should be calculated. (Default: `short`) |
+### getTopTracks
+
+Get your top tracks. Pass an options object as the first argument:
+
+```javascript
+await spotify.getTopTracks({ limit: 20, timeRange: 'long' })
+```
+
+| Option      | Required | Default   | Description                                                               |
+| ----------- | -------- | --------- | ------------------------------------------------------------------------- |
+| `limit`     | No       | `10`      | Number of top tracks to return (1 to 50).                                 |
+| `timeRange` | No       | `'short'` | Time range the top tracks are calculated over: `short`, `medium`, `long`. |
 
 ## Related
 
-- [spotify-rtoken-cli](https://github.com/rocktimsaikia/spotify-rtoken-cli) - Generate Spotify `refresh_token` right from terminal
+- [**spotify-rtoken-cli**](https://github.com/rocktimsaikia/spotify-rtoken-cli): Generate Spotify refresh_token right from terminal.
 
 ## License
 
-[MIT](./LICENSE) License &copy; [ Rocktim Saikia ](https://github.com/rocktimsaikia) 2026
+MIT 2022-2026 &copy; [Rocktim Saikia](https://rocktim.dev)
