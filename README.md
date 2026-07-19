@@ -5,7 +5,7 @@
 
 Simple Spotify client for nodejs exposing useful methods
 
-> I was using a basic version of this library on my [website](https://www.rocktimsaikia.dev/) for a long time, which led me to transform it into a fully-fledged module.
+> I was using a basic version of this library on my [website](https://rocktim.dev/) for a long time, which led me to transform it into a fully-fledged module.
 
 ## Prerequisite
 
@@ -54,7 +54,7 @@ Example output:
     isPlaying: true,
     title: '<track title>',
     artist: '<artist name>',
-    album: '<album name>',
+    link: '<spotify track url>',
  }
 ```
 
