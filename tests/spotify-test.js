@@ -1,120 +1,141 @@
-import 'dotenv/config'
 import test from 'ava'
-import sinon from 'sinon'
 import { SpotifyClient } from '../dist/index.js'
 
-const clientId = 'xxx-xxx-xxx-xxx'
-const clientSecret = 'xxx-xxx-xxx-xxx'
-const refreshToken = 'xxx-xxx-xxx-xxx'
+const newClient = () =>
+  new SpotifyClient({
+    clientId: 'xxx-xxx-xxx-xxx',
+    clientSecret: 'xxx-xxx-xxx-xxx',
+    refreshToken: 'xxx-xxx-xxx-xxx'
+  })
 
-const spotify = new SpotifyClient({ clientId, clientSecret, refreshToken })
+const json = (data, status = 200) => new Response(JSON.stringify(data), { status })
 
-sinon.stub(spotify, 'getCurrentTrack').resolves({
-  title: 'fake-title',
-  artist: 'fake-artist',
-  link: 'https://open.spotify.com/track/123456789',
-  isPlaying: true
+const track = (i) => ({
+  name: `fake-title-${i}`,
+  artists: [{ name: `fake-artist-${i}` }],
+  external_urls: { spotify: `https://open.spotify.com/track/${i}` }
 })
 
-test('get currently playing track', async (t) => {
-  const currentTrack = await spotify.getCurrentTrack()
-  t.not(typeof currentTrack, 'undefined')
+const routes = {
+  token: () => json({ access_token: 'fake-access-token' }),
+  currentlyPlaying: () => json({ item: track(0) }),
+  recentlyPlayed: (limit) =>
+    json({ items: Array.from({ length: limit }, (_, i) => ({ track: track(i) })) }),
+  topTracks: (limit) => json({ items: Array.from({ length: limit }, (_, i) => track(i)) })
+}
 
-  // not null means there is a track playing
-  t.is(currentTrack?.title, 'fake-title')
-  t.is(currentTrack?.artist, 'fake-artist')
-  t.is(currentTrack?.link, 'https://open.spotify.com/track/123456789')
-  t.is(currentTrack?.isPlaying, true)
+// ponytail: fake Spotify API is a URL-routed fetch stub; swap `overrides` per test
+// instead of running a mock http server
+let overrides = {}
+let lastUrl = ''
+globalThis.fetch = async (url) => {
+  lastUrl = String(url)
+  const limit = Number(new URL(lastUrl).searchParams.get('limit')) || 1
+  if (lastUrl.includes('accounts.spotify.com/api/token'))
+    return (overrides.token ?? routes.token)()
+  if (lastUrl.includes('/currently-playing'))
+    return (overrides.currentlyPlaying ?? routes.currentlyPlaying)()
+  if (lastUrl.includes('/recently-played'))
+    return (overrides.recentlyPlayed ?? routes.recentlyPlayed)(limit)
+  if (lastUrl.includes('/top/tracks'))
+    return (overrides.topTracks ?? routes.topTracks)(limit)
+  throw new Error(`Unexpected fetch: ${lastUrl}`)
+}
+
+test.serial.beforeEach(() => {
+  overrides = {}
 })
 
-const mockTracks = new Array(50).fill(null).map((_, i) => ({
-  title: `fake-title-${i}`,
-  artist: `fake-artist-${i}`,
-  link: `https://open.spotify.com/track/${i}`
-}))
+test.serial('get currently playing track', async (t) => {
+  const currentTrack = await newClient().getCurrentTrack()
+  t.deepEqual(currentTrack, {
+    isPlaying: true,
+    title: 'fake-title-0',
+    artist: 'fake-artist-0',
+    link: 'https://open.spotify.com/track/0'
+  })
+})
 
-sinon.stub(spotify, 'getRecentTracks').callsFake(async (limit = 1) => {
-  if (limit > 50 || limit < 1) {
-    throw new Error('Limit must be between 1 and 50')
+test.serial('falls back to last played track when nothing is playing', async (t) => {
+  overrides.currentlyPlaying = () => new Response(null, { status: 204 })
+  const currentTrack = await newClient().getCurrentTrack()
+  t.deepEqual(currentTrack, {
+    isPlaying: false,
+    title: 'fake-title-0',
+    artist: 'fake-artist-0',
+    link: 'https://open.spotify.com/track/0'
+  })
+})
+
+test.serial(
+  'returns null when nothing is playing and fallback is disabled',
+  async (t) => {
+    overrides.currentlyPlaying = () => new Response(null, { status: 204 })
+    const currentTrack = await newClient().getCurrentTrack({
+      fallbackToLastPlayed: false
+    })
+    t.is(currentTrack, null)
   }
-  return mockTracks.slice(0, limit)
+)
+
+test.serial('regenerates the access token on 401 and retries', async (t) => {
+  let playingCalls = 0
+  let tokenCalls = 0
+  overrides.token = () => {
+    tokenCalls++
+    return routes.token()
+  }
+  overrides.currentlyPlaying = () =>
+    ++playingCalls === 1 ? new Response(null, { status: 401 }) : routes.currentlyPlaying()
+
+  const currentTrack = await newClient().getCurrentTrack()
+  t.is(currentTrack?.title, 'fake-title-0')
+  t.is(tokenCalls, 2)
 })
 
-test('get last played song', async (t) => {
-  const lastPlayed = await spotify.getRecentTracks()
-  t.not(typeof lastPlayed, 'undefined')
+test.serial('get last played song', async (t) => {
+  const lastPlayed = await newClient().getRecentTracks()
   t.is(lastPlayed.length, 1)
-  t.is(lastPlayed[0]?.title, 'fake-title-0')
-  t.is(lastPlayed[0]?.artist, 'fake-artist-0')
-  t.is(lastPlayed[0]?.link, 'https://open.spotify.com/track/0')
+  t.deepEqual(lastPlayed[0], {
+    title: 'fake-title-0',
+    artist: 'fake-artist-0',
+    link: 'https://open.spotify.com/track/0'
+  })
 })
 
-test('get 10 recently played songs', async (t) => {
-  const lastPlayed = await spotify.getRecentTracks(10)
-  t.not(typeof lastPlayed, 'undefined')
+test.serial('get 10 recently played songs', async (t) => {
+  const lastPlayed = await newClient().getRecentTracks(10)
   t.is(lastPlayed.length, 10)
-  const randomTrackIdx = Math.floor(Math.random() * 10)
-  t.is(lastPlayed[randomTrackIdx]?.title, `fake-title-${randomTrackIdx}`)
-  t.is(lastPlayed[randomTrackIdx]?.artist, `fake-artist-${randomTrackIdx}`)
-  t.is(
-    lastPlayed[randomTrackIdx]?.link,
-    `https://open.spotify.com/track/${randomTrackIdx}`
-  )
+  t.is(lastPlayed[9]?.title, 'fake-title-9')
+  t.true(lastUrl.includes('limit=10'))
 })
 
-sinon.stub(spotify, 'getTopTracks').callsFake(async (options = {}) => {
-  const limit = options.limit || 10
-  if (limit > 50 || limit < 1) {
-    throw new Error('Limit must be between 1 and 50')
-  }
-  return mockTracks.slice(0, limit)
-})
-
-test('Get top tracks with default options', async (t) => {
-  const topTracks = await spotify.getTopTracks()
-  t.not(typeof topTracks, 'undefined')
+test.serial('get top tracks with default options', async (t) => {
+  const topTracks = await newClient().getTopTracks()
   t.is(topTracks.length, 10)
-  const randomTrackIdx = Math.floor(Math.random() * 10)
-  t.is(topTracks[randomTrackIdx]?.title, `fake-title-${randomTrackIdx}`)
-  t.is(topTracks[randomTrackIdx]?.artist, `fake-artist-${randomTrackIdx}`)
-  t.is(
-    topTracks[randomTrackIdx]?.link,
-    `https://open.spotify.com/track/${randomTrackIdx}`
-  )
+  t.deepEqual(topTracks[0], {
+    title: 'fake-title-0',
+    artist: 'fake-artist-0',
+    link: 'https://open.spotify.com/track/0'
+  })
+  t.true(lastUrl.includes('time_range=short_term'))
 })
 
-test('Get top tracks with limit `10` and timeRange `long`', async (t) => {
-  const topTracks = await spotify.getTopTracks({ limit: 20, timeRange: 'long' })
-  t.not(typeof topTracks, 'undefined')
+test.serial('get top tracks with limit `20` and timeRange `long`', async (t) => {
+  const topTracks = await newClient().getTopTracks({ limit: 20, timeRange: 'long' })
   t.is(topTracks.length, 20)
-  const randomTrackIdx = Math.floor(Math.random() * 20)
-  t.is(topTracks[randomTrackIdx]?.title, `fake-title-${randomTrackIdx}`)
-  t.is(topTracks[randomTrackIdx]?.artist, `fake-artist-${randomTrackIdx}`)
-  t.is(
-    topTracks[randomTrackIdx]?.link,
-    `https://open.spotify.com/track/${randomTrackIdx}`
-  )
+  t.true(lastUrl.includes('time_range=long_term'))
+  t.true(lastUrl.includes('limit=20'))
 })
 
-test('Get top tracks with default limit and timeRange `medium`', async (t) => {
-  const topTracks = await spotify.getTopTracks({ timeRange: 'medium' })
-  t.not(typeof topTracks, 'undefined')
-  t.is(topTracks.length, 10)
-  const randomTrackIdx = Math.floor(Math.random() * 10)
-  t.is(topTracks[randomTrackIdx]?.title, `fake-title-${randomTrackIdx}`)
-  t.is(topTracks[randomTrackIdx]?.artist, `fake-artist-${randomTrackIdx}`)
-  t.is(
-    topTracks[randomTrackIdx]?.link,
-    `https://open.spotify.com/track/${randomTrackIdx}`
-  )
+test.serial('getRecentTracks: passing limit over 50 should throw error', async (t) => {
+  await t.throwsAsync(() => newClient().getRecentTracks(60), {
+    message: /Limit must be between 1 and 50/
+  })
 })
 
-test('getRecentTracks: passing limit over 50 should throw error', async (t) => {
-  const error = await t.throwsAsync(() => spotify.getRecentTracks(60))
-  t.is(error?.message, 'Limit must be between 1 and 50')
-})
-
-test('getTopTracks: passing limit over 50 should throw error', async (t) => {
-  const error = await t.throwsAsync(() => spotify.getTopTracks({ limit: 60 }))
-  t.is(error?.message, 'Limit must be between 1 and 50')
+test.serial('getTopTracks: passing limit over 50 should throw error', async (t) => {
+  await t.throwsAsync(() => newClient().getTopTracks({ limit: 60 }), {
+    message: /Limit must be between 1 and 50/
+  })
 })
