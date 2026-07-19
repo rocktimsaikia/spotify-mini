@@ -91,4 +91,4 @@ Get the top tracks of the user.
 
 ## License
 
-[MIT](./LICENSE) License &copy; [ Rocktim Saikia ](https://github.com/rocktimsaikia) 2025
+[MIT](./LICENSE) License &copy; [ Rocktim Saikia ](https://github.com/rocktimsaikia) 2026
