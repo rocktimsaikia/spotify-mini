@@ -1,12 +1,11 @@
-import fetch from 'node-fetch'
 import { stringify } from 'node:querystring'
 import { AccessToken, CurrentlyPlaying, RecentlyPlayed, Track } from 'spotify-types'
 import {
-    CurrentlyPlayingOptions,
-    CurrentlyPlayingResponse,
-    ResponseTrack,
-    SpotifyClientOptions,
-    TopItemsOptions
+  CurrentlyPlayingOptions,
+  CurrentlyPlayingResponse,
+  ResponseTrack,
+  SpotifyClientOptions,
+  TopItemsOptions
 } from './types/base'
 import { BaseError, TopTracks } from './types/spotify'
 import { encodeToBase64, filterTrack } from './utils'
